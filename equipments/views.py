@@ -76,7 +76,8 @@ def borrow_act(request, equipment_id):
     temp.due = dueday
     temp.save()
 
-    slack.post_to_channel('bot_test', 'A equipment is borrowed!')
+    pm = temp.borrower + "が" + temp.name + "を貸出しました。返却期限は" + str(temp.due) + "です。"
+    slack.post_to_channel('bot_test', pm)
 
   return HttpResponseRedirect(reverse('equipments:index'))
 
@@ -86,6 +87,10 @@ def return_act(request, equipment_id):
   temp = Equipment.objects.get(pk=equipment_id)
 
   if temp.borrower == request.POST['name']:
+
+    pm = temp.borrower + "が" + temp.name + "を返却しました。"
+    slack.post_to_channel('bot_test', pm)
+    
     temp.borrower = ""
     temp.state = 0
     temp.save()
@@ -104,4 +109,8 @@ def extend_act(request, equipment_id):
       dueday = temp.due + datetime.timedelta(days=7)
     temp.due = dueday
     temp.save()
-    return HttpResponseRedirect(reverse('equipments:index'))
+
+    pm = temp.borrower + "が" + temp.name + "の貸出を延長しました。返却期限は" + str(temp.due) + "です。"
+    slack.post_to_channel('bot_test', pm)
+
+  return HttpResponseRedirect(reverse('equipments:index'))
