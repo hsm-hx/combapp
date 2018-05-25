@@ -1,0 +1,15 @@
+{% extends "equipments/base.html" %}
+
+{% block body %}
+  <div class="col-lg-6 full-width">
+    {{message}}
+    <hr>
+    <form class="form-group" method="post" action="">
+      {% csrf_token %}
+      <label>{{ form.action.label }} {{ form.action }}</label><br>
+      <label>{{ form.name.label }} {{ form.name }}</label><br>
+
+      <input type="submit" name="Enter">
+    </form>
+  </div>
+{% endblock %}
