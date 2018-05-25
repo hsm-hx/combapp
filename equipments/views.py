@@ -9,11 +9,17 @@ import datetime
 from .models import *
 from . import forms, secret
 
+CHANNEL_ID = 'G8XP0KUNQ'
+
 class Slack(object):
   __slacker = None
 
   def __init__(self, token):
     self.__slacker = Slacker(token)
+
+  def post_to_channel(self, channel, message):
+    channel_name = "#" + channel
+    self.__slacker.chat.post_message(CHANNEL_ID, message)
 
 slack = Slack(secret.slack_token)
 
@@ -69,6 +75,8 @@ def borrow_act(request, equipment_id):
     temp.state = 1
     temp.due = dueday
     temp.save()
+
+    slack.post_to_channel('bot_test', 'A equipment is borrowed!')
 
   return HttpResponseRedirect(reverse('equipments:index'))
 
