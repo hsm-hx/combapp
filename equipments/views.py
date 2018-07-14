@@ -7,7 +7,7 @@ from slacker import Slacker
 import datetime
 
 from .models import *
-from . import forms, secret
+from . import secret, forms, models
 
 CHANNEL_ID = 'G8XP0KUNQ'
 
@@ -18,7 +18,6 @@ class Slack(object):
     self.__slacker = Slacker(token)
 
   def post_to_channel(self, channel, message):
-    channel_name = "#" + channel
     self.__slacker.chat.post_message(CHANNEL_ID, message)
 
 slack = Slack(secret.slack_token)
@@ -40,77 +39,46 @@ def detail(request, equipment_id):
   }
   return render(request, 'equipments/detail.html', context)
 
-def borrowing(request, equipment_id):
-  equipment = get_object_or_404(Equipment, pk=equipment_id)
-
-  context = {
-    'equipment': equipment,
-  }
-  return render(request, 'equipments/borrow.html', context)
-
-def returning(request, equipment_id):
-  equipment = get_object_or_404(Equipment, pk=equipment_id)
-
-  context = {
-    'equipment': equipment,
-  }
-  return render(request, 'equipments/return.html', context)
-
-def extension(request, equipment_id):
-  equipment = get_object_or_404(Equipment, pk=equipment_id)
-
-  context = {
-    'equipment': equipment,
-  }
-  return render(request, 'equipments/extend.html', context)
-
-def borrow_act(request, equipment_id):
-  equipment = get_object_or_404(Equipment, pk=equipment_id)
+def act(request, equipment_id):
   temp = Equipment.objects.get(pk=equipment_id)
 
-  if temp.state == 0:
-    dueday = datetime.date.today() + datetime.timedelta(days=13)
+  if request.POST['action'] == 'borrowing':
+    if temp.state == 0:
+      dueday = datetime.date.today() + datetime.timedelta(days=13)
 
-    temp.borrower = request.POST['name']
-    temp.state = 1
-    temp.due = dueday
-    temp.save()
+      temp.borrower = request.POST['name']
+      temp.state = 1
+      temp.due = dueday
+      temp.save()
 
-    pm = temp.borrower + "が" + temp.name + "を貸出しました。返却期限は" + str(temp.due) + "です。"
-    slack.post_to_channel('bot_test', pm)
+      pm = temp.borrower + "が" + temp.name + "を貸出しました。返却期限は" + str(temp.due) + "です。"
+      slack.post_to_channel('bot_test', pm)
 
-  return HttpResponseRedirect(reverse('equipments:index'))
+    return HttpResponseRedirect(reverse('equipments:index'))
 
-def return_act(request, equipment_id):
-  equipment = get_object_or_404(Equipment, pk=equipment_id)
+  if request.POST['action'] == 'returning':
+    if temp.borrower == request.POST['name']:
 
-  temp = Equipment.objects.get(pk=equipment_id)
+      pm = temp.borrower + "が" + temp.name + "を返却しました。"
+      slack.post_to_channel('bot_test', pm)
+       
+      temp.borrower = ""
+      temp.state = 0
+      temp.save()
 
-  if temp.borrower == request.POST['name']:
+    return HttpResponseRedirect(reverse('equipments:index'))
 
-    pm = temp.borrower + "が" + temp.name + "を返却しました。"
-    slack.post_to_channel('bot_test', pm)
-    
-    temp.borrower = ""
-    temp.state = 0
-    temp.save()
+  if request.POST['action'] == 'extension':
+    if temp.borrower == request.POST['name']:
+      if temp.due < datetime.date.today():
+        dueday = datetime.date.today() + datetime.timedelta(days=7)
+      else:
+        dueday = temp.due + datetime.timedelta(days=7)
+      temp.due = dueday
+      temp.save()
 
-  return HttpResponseRedirect(reverse('equipments:index'))
+      pm = temp.borrower + "が" + temp.name + "の貸出を延長しました。返却期限は" + str(temp.due) + "です。"
+      slack.post_to_channel('bot_test', pm)
 
-def extend_act(request, equipment_id):
-  equipment = get_object_or_404(Equipment, pk=equipment_id)
-
-  temp = Equipment.objects.get(pk=equipment_id)
-
-  if temp.borrower == request.POST['name']:
-    if temp.due < datetime.date.today():
-      dueday = datetime.date.today() + datetime.timedelta(days=7)
-    else:
-      dueday = temp.due + datetime.timedelta(days=7)
-    temp.due = dueday
-    temp.save()
-
-    pm = temp.borrower + "が" + temp.name + "の貸出を延長しました。返却期限は" + str(temp.due) + "です。"
-    slack.post_to_channel('bot_test', pm)
-
+    return HttpResponseRedirect(reverse('equipments:index'))
   return HttpResponseRedirect(reverse('equipments:index'))

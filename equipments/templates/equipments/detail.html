@@ -48,9 +48,11 @@
                   </tbody>
                 </table>
 
-                <li><a href="{% url 'equipments:borrowing' equipment.id %}">Borrow</a></li>
-                <li><a href="{% url 'equipments:returning' equipment.id %}">Return</a></li>
-                <li><a href="{% url 'equipments:extension' equipment.id %}">Extend</a></li>
+                <form action="{% url 'equipments:act' equipment.id %}" method="post">
+                  {% csrf_token %}
+                  {{ form }}
+                  <input type="submit" value="Submit">
+                </form>
 
               </div>
               

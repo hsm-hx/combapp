@@ -16,7 +16,8 @@ import sys
 from equipments import *
 
 sys.path.append('../equipments')
-import secret
+from . import secret
+
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
