@@ -5,9 +5,14 @@ from django.urls import reverse
 from slacker import Slacker
 
 import datetime
+import os, sys
+
+current_dir = os.path.abspath(os.path.dirname(__file__))
+sys.path.append(current_dir)
 
 from .models import *
-from . import secret, forms, models
+from . import forms
+import config
 
 CHANNEL_ID = 'G8XP0KUNQ'
 
@@ -20,7 +25,7 @@ class Slack(object):
   def post_to_channel(self, channel, message):
     self.__slacker.chat.post_message(CHANNEL_ID, message)
 
-slack = Slack(secret.slack_token)
+slack = Slack(config.slack_token)
 
 def index(request):
   equipment_list = Equipment.objects.all()
