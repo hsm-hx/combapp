@@ -15,7 +15,7 @@ class Equipment(models.Model):
   owner = models.CharField(max_length=20)
   state = models.IntegerField()
   due = models.DateField(auto_now = False, auto_now_add = False)
-  borrower = models.CharField(max_length=20, )
+  borrower = models.CharField(max_length=20)
   remark = models.TextField()
 
   def __str__(self):

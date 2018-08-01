@@ -87,25 +87,3 @@ def act(request, equipment_id):
 
     return HttpResponseRedirect(reverse('equipments:index'))
   return HttpResponseRedirect(reverse('equipments:index'))
-
-def new(request):
-  form = forms.NewForm()
-
-  context = {
-    'form': form,
-  }
-
-  return render(request, 'equipments/new.html', context)
-
-def create(request):
-  temp = Equipment(
-    name=request.POST['name'], 
-    eq_type=request.POST['eq_type'], 
-    state=0,
-    owner='',
-    due=datetime.date.today(), 
-    remark=request.POST['remark']
-    )
-  temp.save()
-
-  return HttpResponseRedirect(reverse('equipments:index'))
