@@ -1,5 +1,5 @@
-{% extends "equipments/base.html" %}
-{% block title %}{{ equipment.name }} - Comb App{% endblock %}
+{% extends "users/base.html" %}
+{% block title %}{{ member.name }} - Comb App{% endblock %}
 {% load staticfiles %}
 
   {%block body %}
@@ -11,7 +11,7 @@
 
               <div class="col-lg-6" full-width">
                           
-                <h3 class="page-header">{{ equipment.name }}</h3>
+                <h3 class="page-header">{{ member.name }}</h3>
 
                 {% if error_message %}
                 <p><strong>{{ error_message }}</strong></p>
@@ -20,40 +20,19 @@
                 <table id="equip-list-table" class="table table-striped table-bordered dataTable no-footer dtr-inline full-width">
                   <thead>
                     <tr>
-                      <th>Owner</th>
-                      <th>State</th>
-                      <th>Due</th>
-                      <th>Borrower</th>
-                      <th>Remark</th>
+                      <th>Name_EN</th>
+                      <th>Grade</th>
+                      <th>User_ID</th>
                     </tr>
                   </thead>
                   <tbody>
                     <tr>
-                      <td>{{equipment.owner}}</td>
-                      {% if equipment.state == 0 %}
-                        <td>NOT_ON_LOAN</td>
-                      {% else %}
-                        <td>ON_LOAN</td>
-                      {% endif %}
-                      {% if equipment.state == 1 %}
-                        <td>{{equipment.due}}</td>
-                      {% else %}
-                        <td> </td>
-                      {% endif %}
-                      {% if equipment.borrower != 'None' %}
-                        <td>{{equipment.borrower}}</td>
-                      {% endif %}
-                      <td>{{equipment.remark}}</td>
+                      <td>{{member.name_en}}</td>
+                      <td>{{member.grade}}</td>
+                      <td>{{member.user_id}}</td>
                     </tr>
                   </tbody>
                 </table>
-
-                <form action="{% url 'equipments:act' equipment.id %}" method="post">
-                  {% csrf_token %}
-                  {{ form }}
-                  <input type="submit" value="Submit">
-                </form>
-
               </div>
               
             </div>
