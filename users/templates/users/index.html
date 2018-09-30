@@ -1,0 +1,51 @@
+{% extends "users/base.html" %}
+{% block title %}Member List - Comb App{% endblock %}
+{% load staticfiles %}
+
+  {%block body %}
+    <div id="wrapper">
+      <div id="page-wrapper">
+        <div class="row">
+          <div class="col-lg-6 full-width">
+            <div class="panel panel-default full-width">
+
+              <div class="panel-body full-width full-height">
+                <table id="equip-list-table" class="table table-striped table-bordered table-hover dataTable no-footer dtr-inline full-width">
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Name_EN</th>
+                      <th>Grade</th>
+                      <th>user_id</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for member in member_list%}
+                      <tr>
+                        <td>
+                          <a href="{% url 'users:detail' member.id %}">{{member.name}}</a>
+                        </td>
+                        <td>{{member.name_en}}</td>
+                        <td>{{member.grade}}</td>
+                        <td>{{member.user_id}}</td>
+                      </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script type="text/javascript">
+      $(document).ready(function(){
+        $('#equip-list-table').dataTable({
+          responsive: true,
+          ordering: true,
+          displayLength: 20,
+        });
+      });
+    </script>
+    {% endblock %}
